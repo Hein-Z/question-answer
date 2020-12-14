@@ -17,7 +17,7 @@
     </style>
 </head>
 <body class="antialiased">
-<div class="container">
+<div class="container  mt-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
 @yield('content')
 </div>
 <script src="{{asset('js/app.js')}}"></script>

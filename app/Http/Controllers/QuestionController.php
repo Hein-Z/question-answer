@@ -15,7 +15,7 @@ class QuestionController extends Controller
     public function index()
     {
         $questions=Question::latest()->paginate(5);
-        return view('index',compact('questions',$questions));
+        return view('question.index',compact('questions',$questions));
     }
 
     /**
@@ -25,7 +25,7 @@ class QuestionController extends Controller
      */
     public function create()
     {
-        //
+        return view('question.create');
     }
 
     /**
@@ -36,7 +36,17 @@ class QuestionController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $result=$request->validate([
+            'title'=>'required|max:255',
+            'body'=>'required'
+        ]);
+        Question::create([
+            'title'=>$request->title,
+            'body'=>$request->body,
+            'user_id'=>1,
+        ]);
+
+        return redirect()->route('question.index');
     }
 
     /**
