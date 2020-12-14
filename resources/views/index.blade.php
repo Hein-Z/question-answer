@@ -23,7 +23,8 @@
 
                         <div class="p-6">
                             <div class="flex items-center">
-                                <div class="ml-4 text-lg leading-7 font-semibold"><h2 class="text-gray-900 dark:text-white">{{$question->title}}</h2></div>
+                                <div class="h5">{{$question->user->name}}</div>
+                                <div class="ml-4 text-lg leading-7 font-semibold"><a class="text-gray-900 dark:text-white h2" href="{{$question->url}}">{{$question->title}}</a></div>
                             </div>
                             <div class="flex items-center">
                                 <div class="ml-4 mt-2 text-gray-600 dark:text-gray-400 text-sm">
