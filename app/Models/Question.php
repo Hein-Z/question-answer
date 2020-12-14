@@ -24,4 +24,8 @@ class Question extends Model
     public function getUrlAttribute(){
         return '#';
     }
+
+    public function getCreatedDateAttribute(){
+        return $this->created_at->diffForHumans();
+    }
 }

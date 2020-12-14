@@ -21,10 +21,11 @@
                     <div class="grid grid-cols-1">
                         @foreach($questions as $question)
 
-                        <div class="p-6">
-                            <div class="flex items-center">
-                                <div class="h5">{{$question->user->name}}</div>
+                        <div class="p-6 border-bottom border-dark">
+                            <div class="flex items-center d-flex flex-column align-items-start ">
                                 <div class="ml-4 text-lg leading-7 font-semibold"><a class="text-gray-900 dark:text-white h2" href="{{$question->url}}">{{$question->title}}</a></div>
+                                <div class="ml-4 h5 text-info d-flex">Asked By - <span class="text-black-50">{{$question->user->name}}</span></div>
+                                <small class="ml-4  text-info d-flex">Date - <span class="text-black-50">{{$question->created_date}}</span></small>
                             </div>
                             <div class="flex items-center">
                                 <div class="ml-4 mt-2 text-gray-600 dark:text-gray-400 text-sm">
