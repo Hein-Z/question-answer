@@ -46,7 +46,7 @@ class QuestionController extends Controller
             'user_id'=>1,
         ]);
 
-        return redirect()->route('question.index');
+        return redirect()->route('question.index')->with('msg','successfully created');
     }
 
     /**
@@ -57,7 +57,7 @@ class QuestionController extends Controller
      */
     public function show(Question $question)
     {
-        //
+        return view('question.show',['question'=>$question]);
     }
 
     /**
@@ -68,7 +68,7 @@ class QuestionController extends Controller
      */
     public function edit(Question $question)
     {
-        //
+        return view('question.update',['question'=>$question]);
     }
 
     /**
@@ -80,7 +80,12 @@ class QuestionController extends Controller
      */
     public function update(Request $request, Question $question)
     {
-        //
+        $result=$request->validate([
+            'title'=>'required|max:255',
+            'body'=>'required'
+        ]);
+        $question->update($request->only('title','body'));
+        return redirect()->route('question.index')->with('msg','successfully updated');
     }
 
     /**
@@ -91,6 +96,7 @@ class QuestionController extends Controller
      */
     public function destroy(Question $question)
     {
-        //
+        $question->delete();
+        return redirect()->route('question.index')->with('msg','successfully deleted');
     }
 }
