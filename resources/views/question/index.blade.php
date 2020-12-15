@@ -21,7 +21,7 @@
         <div class="col-12">
             <div
                 class=" d-flex justify-content-between h1 font-weight-bolder p-3 bg-gray-100 border-bottom border-dark mx-0">
-                <div>All Question</div>
+                <div><i class="fas fa-question-circle"></i>All Question</div>
                 <div>
                     <a class="btn btn-outline-info" href="{{route('question.create')}}">Ask Question</a>
                 </div>
