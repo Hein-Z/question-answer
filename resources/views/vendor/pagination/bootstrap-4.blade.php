@@ -1,5 +1,5 @@
 @if ($paginator->hasPages())
-    <nav>
+    <nav class="pb-3 mb-3">
         <ul class="pagination justify-content-between pt-4 ">
             {{-- Previous Page Link --}}
             @if ($paginator->onFirstPage())

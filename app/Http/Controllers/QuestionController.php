@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\QuestionRequest;
 use App\Models\Question;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class QuestionController extends Controller
 {
@@ -34,17 +36,9 @@ class QuestionController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(QuestionRequest $request)
     {
-        $result=$request->validate([
-            'title'=>'required|max:255',
-            'body'=>'required'
-        ]);
-        Question::create([
-            'title'=>$request->title,
-            'body'=>$request->body,
-            'user_id'=>1,
-        ]);
+        $request->user()->questions()->create($request->all());
 
         return redirect()->route('question.index')->with('msg','successfully created');
     }
@@ -68,6 +62,7 @@ class QuestionController extends Controller
      */
     public function edit(Question $question)
     {
+        $this->authorize('update',$question);
         return view('question.update',['question'=>$question]);
     }
 
@@ -78,12 +73,9 @@ class QuestionController extends Controller
      * @param  \App\Models\Question  $question
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Question $question)
+    public function update(QuestionRequest $request, Question $question)
     {
-        $result=$request->validate([
-            'title'=>'required|max:255',
-            'body'=>'required'
-        ]);
+        $this->authorize('update',$question);
         $question->update($request->only('title','body'));
         return redirect()->route('question.index')->with('msg','successfully updated');
     }
@@ -96,7 +88,9 @@ class QuestionController extends Controller
      */
     public function destroy(Question $question)
     {
+        $this->authorize('delete',$question);
         $question->delete();
         return redirect()->route('question.index')->with('msg','successfully deleted');
     }
 }
+
