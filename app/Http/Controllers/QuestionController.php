@@ -62,7 +62,7 @@ class QuestionController extends Controller
      */
     public function edit(Question $question)
     {
-        $this->authorize('update',$question);
+        $this->authorize('question',$question);
         return view('question.update',['question'=>$question]);
     }
 
@@ -75,7 +75,7 @@ class QuestionController extends Controller
      */
     public function update(QuestionRequest $request, Question $question)
     {
-        $this->authorize('update',$question);
+        $this->authorize('question',$question);
         $question->update($request->only('title','body'));
         return redirect()->route('question.index')->with('msg','successfully updated');
     }
@@ -88,7 +88,7 @@ class QuestionController extends Controller
      */
     public function destroy(Question $question)
     {
-        $this->authorize('delete',$question);
+        $this->authorize('question',$question);
         $question->delete();
         return redirect()->route('question.index')->with('msg','successfully deleted');
     }

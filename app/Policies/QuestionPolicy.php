@@ -20,13 +20,17 @@ class QuestionPolicy
         //
     }
 
-    public function delete(User $user, Question $question)
-    {
-        return $user->id === $question->user->id;
-    }
+//    public function delete(User $user, Question $question)
+//    {
+//        return $user->id === $question->user->id;
+//    }
+//
+//    public function update(User $user, Question $question)
+//    {
+//        return $user->id === $question->user->id;
+//    }
 
-    public function update(User $user, Question $question)
-    {
+    public function question(User $user,Question $question){
         return $user->id === $question->user->id;
     }
 }
