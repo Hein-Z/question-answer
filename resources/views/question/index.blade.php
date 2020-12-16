@@ -11,18 +11,7 @@
                     <a class="btn btn-outline-info" href="{{route('question.create')}}">Ask Question</a>
                 </div>
             </div>
-            @if(session()->has('msg'))
-                <div
-                    class='alert-success alert alert-dismissible fade show d-flex justify-content-between align-items-center pr-0'
-                    role="alert">
-                    <div class="h3">
-                        {{ session()->get('msg') }}
-                    </div>
-                    <button type="button" class="close position-relative" data-dismiss="alert" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-            @endif
+            @include('_alert')
         </div>
         @foreach($questions as $question)
             <div class="col-12 border-dark border-bottom">

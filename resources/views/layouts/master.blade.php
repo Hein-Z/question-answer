@@ -17,7 +17,7 @@
     </style>
 </head>
 <body class="antialiased">
-<nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
+<nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm fixed-top">
     <div class="container">
         <a class="navbar-brand" href="{{ route('question.index') }}">
             {{ config('app.name', 'Laravel') }}
@@ -70,7 +70,7 @@
         </div>
     </div>
 </nav>
-<div class="container  mt-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
+<div class="container  mt-5 pt-8 bg-white dark:bg-gray-800 shadow sm:rounded-lg">
 @yield('content')
 </div>
 <script src="{{asset('js/app.js')}}"></script>

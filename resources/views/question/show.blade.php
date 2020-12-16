@@ -72,12 +72,23 @@
 
     </div>
 
-
+    @include('_alert')
     <div class="row">
         <div class="text-center col-12 h1 font-weight-bolder bg-gray-100">Answers</div>
         @if(count($question->answers)===0)
             <div class="text-center col-12 h3 font-weight-bolder bg-gray-100">There is no answers yet</div>
         @endif
+
+        <div class="col-12">
+            <form action="{{route('question.answer.store',$question->slug)}}" method="post">
+                @csrf
+                <label for="answer">Enter Your Answer</label>
+                <textarea name="body" class="form-control @error('body') is-invalid @enderror" placeholder="Your Answer"
+                          id="answer" cols="30" rows="6"
+                          style="resize: none"></textarea>
+                <button type="submit" class="btn-block btn btn-primary my-1">Post</button>
+            </form>
+        </div>
     </div>
 
 
@@ -118,14 +129,32 @@
                     <div class="ml-4 mt-2 text-gray-600 text-dark" style=" word-wrap: break-word;">
                         {{$answer->body}}
                     </div>
-                    <div class="flex ml-4">
-                        <img src="{{$answer->gravator}}" alt="avator" class="img-thumbnail" width="50px" height="50px">
-                        <div>
-                            <div class="ml-2 h5 text-info d-flex">Answered By - <span
-                                    class="text-black-50">{{$answer->user->name}}</span></div>
-                            <small class="ml-2  text-info d-flex">Date - <span
-                                    class="text-black-50">{{$answer->created_date}}</span></small>
+                    <div class="flex flex-column ml-4 mt-4">
+                        <div class="flex ">
+                            <img src="{{$answer->gravator}}" alt="avator" class="img-thumbnail" width="50px"
+                                 height="50px">
+                            <div>
+                                <div class="ml-2 h5 text-info d-flex">Answered By - <span
+                                        class="text-black-50">{{$answer->user->name}}</span></div>
+                                <small class="ml-2  text-info d-flex">Date - <span
+                                        class="text-black-50">{{$answer->created_date}}</span></small>
+                            </div>
                         </div>
+                        @can('answer',$answer)
+                            <div class="flex mt-3">
+                                <a class="btn btn-primary btn-sm"
+                                   href="{{route('question.answer.edit',[$question->slug,$answer])}}">Edit</a>
+                                <form action="{{route('question.answer.destroy',[$question->slug,$answer])}}"
+                                      style="display: contents" method="post">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button class="btn btn-danger btn-sm ml-1" onclick="confirm('Are You Sure')"
+                                            type="submit">
+                                        Delete
+                                    </button>
+                                </form>
+                            </div>
+                        @endcan
                     </div>
                 </div>
             </div>

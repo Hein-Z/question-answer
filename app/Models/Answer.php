@@ -9,6 +9,8 @@ class Answer extends Model
 {
     use HasFactory;
 
+    protected $fillable = ['question_id', 'user_id', 'body'];
+
     public function user()
     {
         return $this->belongsTo(User::class);
@@ -25,7 +27,10 @@ class Answer extends Model
 
         static::created(function ($answer) {
             $answer->question->increment('answers_count');
-            $answer->question->save();
+        });
+
+        static::deleted(function ($answer) {
+            $answer->question->decrement('answers_count');
         });
     }
 
