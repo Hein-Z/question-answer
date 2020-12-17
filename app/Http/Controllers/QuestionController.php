@@ -92,5 +92,11 @@ class QuestionController extends Controller
         $question->delete();
         return redirect()->route('question.index')->with('msg', 'successfully deleted');
     }
+
+    public function favourite(Question $question)
+    {
+        $question->favourites()->toggle(Auth::user()->id);
+        return back();
+    }
 }
 

@@ -5,6 +5,8 @@ namespace App\Models;
 use App\Models\Traits\Slugify;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
+use function Symfony\Component\Translation\t;
 
 class Question extends Model
 {
@@ -46,6 +48,22 @@ class Question extends Model
         $grav_url = "https://www.gravatar.com/avatar/" . md5(strtolower(trim($email))) . "s=" . $size;
         return $grav_url;
     }
+
+    public function favourites()
+    {
+        return $this->belongsToMany(User::class, 'favourites', 'question_id', 'user_id');
+    }
+
+    public function isFavourite()
+    {
+        return in_array(Auth::user()->id, $this->favourites->pluck('id')->toArray());
+    }
+
+    public function getStatusAttribute()
+    {
+        return $this->isFavourite() ? 'favorited' : '';
+    }
+
 
 }
 

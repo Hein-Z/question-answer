@@ -13,12 +13,15 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
+Route::post('/', function () {
     return redirect()->route('question.index');
 })->middleware('auth');
 
 Route::resource('question', 'QuestionController')->middleware('auth');
 Route::resource('question.answer', 'AnswerController')->except(['index', 'create', 'show'])->middleware('auth');
+Route::post('question/{question}/acceptBestAnswer/{id}', 'AnswerController@acceptBestAnswer')->name('question.answer.acceptBestAnswer')->middleware('auth');
+Route::post('question/{question}/favourite', 'QuestionController@favourite')->name('question.favourite')->middleware('auth');
+
 
 Auth::routes();
 
