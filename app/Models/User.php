@@ -54,6 +54,57 @@ class User extends Authenticatable
 
     public function favourites()
     {
-        return $this->belongsToMany(Question::class, 'favourites','user_id','question_id');
+        return $this->belongsToMany(Question::class, 'favourites', 'user_id', 'question_id');
     }
+
+    public function questionVotes()
+    {
+        return $this->morphedByMany(Question::class, 'votable', 'votables', 'user_id', 'votable_id');
+    }
+
+    public function answerVotes()
+    {
+        return $this->morphedByMany(Answer::class, 'votable', 'votables', 'user_id', 'votable_id');
+    }
+
+    public function voteQuestion( $question, $vote)
+    {
+        $questionVotes = $this->questionVotes();
+        $questionId = $question->id;
+        if ($questionVotes->where('votable_id', $questionId)->exists()) {
+            $questionVotes->updateExistingPivot($question, ['vote' => $vote]);
+        } else {
+            $questionVotes->attach($question, ['vote' => $vote]);
+        }
+
+        $question->load('votes');
+        $upvotes = (int)$question->votes()->wherePivot('vote', 1)->sum('vote');
+        $downvotes = (int)$question->votes()->wherePivot('vote', -1)->sum('vote');
+
+        $question->votes_count = $upvotes + $downvotes;
+
+        $question->save();
+    }
+
+    public function voteAnswer(Answer $answer, $vote)
+    {
+        $answerVotes = $this->answerVotes();
+        $answerId = $answer->id;
+
+        if ($answerVotes->where('votable_id', $answerId)->exists()) {
+            $answerVotes->updateExistingPivot($answer, ['vote' => $vote]);
+        } else {
+            $answerVotes->attach($answer, ['vote' => $vote]);
+        }
+
+        $answer->load('votes');
+        $upvotes = (int)$answer->votes()->wherePivot('vote', 1)->sum('vote');
+        $downvotes = (int)$answer->votes()->wherePivot('vote', -1)->sum('vote');
+
+        $answer->votes_count = $upvotes + $downvotes;
+
+        $answer->save();
+    }
+
+
 }

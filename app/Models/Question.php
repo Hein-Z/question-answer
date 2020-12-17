@@ -51,12 +51,12 @@ class Question extends Model
 
     public function favourites()
     {
-        return $this->belongsToMany(User::class, 'favourites', 'question_id', 'user_id');
+        return $this->belongsToMany(User::class, 'favourites');
     }
 
     public function isFavourite()
     {
-        return in_array(Auth::user()->id, $this->favourites->pluck('id')->toArray());
+        return $this->favourites()->where('user_id', Auth::user()->id)->exists();
     }
 
     public function getStatusAttribute()
@@ -64,6 +64,23 @@ class Question extends Model
         return $this->isFavourite() ? 'favorited' : '';
     }
 
+    public function votes()
+    {
+        return $this->morphToMany(User::class, 'votable', 'votables', 'votable_id', 'user_id');
+    }
 
+    public function downVoteStatus($user)
+    {
+        $questionVotes = $this->votes();
+        $isDownVote = $questionVotes->where('user_id', $user->id)->wherePivot('vote', -1)->exists();
+        return $isDownVote ? 'disabled' : '';
+    }
+
+    public function upVoteStatus($user)
+    {
+        $questionVotes = $this->votes();
+        $isUpVote = $questionVotes->where('user_id', $user->id)->wherePivot('vote', 1)->exists();
+        return $isUpVote ? 'disabled' : '';
+    }
 }
 

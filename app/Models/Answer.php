@@ -57,4 +57,8 @@ class Answer extends Model
         return $this->isBestAnswer() ? 'favorited' : '';
     }
 
+    public function votes()
+    {
+        return $this->morphToMany(User::class, 'votable');
+    }
 }
