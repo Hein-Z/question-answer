@@ -21,4 +21,3 @@ Route::resource('question', 'QuestionController')->middleware('auth');
 Route::resource('question.answer', 'AnswerController')->except(['index', 'create', 'show'])->middleware('auth');
 
 Auth::routes();
-
