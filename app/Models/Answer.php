@@ -46,4 +46,19 @@ class Answer extends Model
         $grav_url = "https://www.gravatar.com/avatar/" . md5(strtolower(trim($email))) . "s=" . $size;
         return $grav_url;
     }
+
+    public function isBestAnswer()
+    {
+        return $this->id === $this->question->best_answer_id;
+    }
+
+    public function getStatusAttribute()
+    {
+        return $this->isBestAnswer() ? 'favorited' : '';
+    }
+
+    public function votes()
+    {
+        return $this->morphToMany(User::class, 'votable');
+    }
 }

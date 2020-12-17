@@ -30,7 +30,14 @@ class QuestionPolicy
 //        return $user->id === $question->user->id;
 //    }
 
-    public function question(User $user,Question $question){
+    public function question(User $user, Question $question)
+    {
+        return $user->id === $question->user->id;
+    }
+
+
+    public function acceptAnswer(User $user, Question $question)
+    {
         return $user->id === $question->user->id;
     }
 }

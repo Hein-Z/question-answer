@@ -6,6 +6,7 @@ use App\Models\Answer;
 use App\Models\Question;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use phpDocumentor\Reflection\Types\Null_;
 
 class AnswerController extends Controller
 {
@@ -59,5 +60,13 @@ class AnswerController extends Controller
         $this->authorize('answer', $answer);
         $answer->delete();
         return back()->with('msg', 'Successfully Deleted');
+    }
+
+    public function acceptBestAnswer(Question $question, Request $request)
+    {
+        $this->authorize('acceptAnswer', $question);
+        $question->best_answer_id = $question->best_answer_id == $request->id ? NULL : $request->id;
+        $question->save();
+        return back();
     }
 }
