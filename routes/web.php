@@ -23,7 +23,4 @@ Route::resource('question.answer', 'AnswerController')->except(['index', 'create
 Auth::routes();
 
 
-//something
-function something(){
-    return 'something';
-}
+
