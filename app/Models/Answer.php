@@ -2,14 +2,19 @@
 
 namespace App\Models;
 
+use App\Models\Traits\Votable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Answer extends Model
 {
     use HasFactory;
+    use Votable;
+
 
     protected $fillable = ['question_id', 'user_id', 'body'];
+    protected $appends = ['created_date','is_best_answer'];
+
 
     public function user()
     {
@@ -47,15 +52,11 @@ class Answer extends Model
         return $grav_url;
     }
 
-    public function isBestAnswer()
+    public function getIsBestAnswerAttribute()
     {
         return $this->id === $this->question->best_answer_id;
     }
 
-    public function getStatusAttribute()
-    {
-        return $this->isBestAnswer() ? 'favorited' : '';
-    }
 
     public function votes()
     {

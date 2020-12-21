@@ -1,4 +1,5 @@
 @extends('layouts.master')
+
 @section('content')
 
     <div class="row  ">
@@ -22,12 +23,13 @@
                             <div>{{ngettext('Answer','Answers',$question->answers_count)}}</div>
 
                             <a title="Click to vote up question "
-                               class=" mt-2 btn {{$question->upVoteStatus(auth()->user())}} flex flex-column"
-                               onclick="event.preventDefault();document.getElementById('up-vote').submit()"
+                               class=" mt-2 btn {{$question->up_vote_status}} flex flex-column"
+                               onclick="event.preventDefault();document.getElementById('{{$question->id}}-up-vote').submit()"
                             >
                                 <i class="fas fa-chevron-up fa-2x"></i>
                             </a>
-                            <form action="{{route('question.vote',$question->slug)}}" id="up-vote" method="post"
+                            <form action="{{route('question.vote',$question->slug)}}" id="{{$question->id}}-up-vote"
+                                  method="post"
                                   style="display:none">
                                 @csrf
                                 <input type="hidden" value="1" name="vote">
@@ -38,12 +40,13 @@
                                 <div class="text-center">{{$question->votes_count}}</div>
                             </div>
                             <a title="Click to vote down question "
-                               class=" mt-2 btn {{$question->downVoteStatus(auth()->user())}}  flex flex-column"
-                               onclick="event.preventDefault();document.getElementById('down-vote').submit()"
+                               class=" mt-2 btn {{$question->down_vote_status}}  flex flex-column"
+                               onclick="event.preventDefault();document.getElementById('{{$question->id}}-down-vote').submit()"
                             >
                                 <i class="fas fa-chevron-down fa-2x"></i>
                             </a>
-                            <form action="{{route('question.vote',$question->slug)}}" id="down-vote" method="post"
+                            <form action="{{route('question.vote',$question->slug)}}" id="{{$question->id}}-down-vote"
+                                  method="post"
                                   style="display:none">
                                 @csrf
                                 <input type="hidden" value="-1" name="vote">
@@ -70,19 +73,13 @@
                                 </div>
                             </div>
                             <div class="flex ml-4">
-                                <img src="{{$question->gravator}}" alt="avator" class="img-thumbnail" width="50px"
-                                     height="50px">
-                                <div>
-                                    <div class="ml-2 h5 text-info d-flex">Asked By - <span
-                                            class="text-black-50">{{$question->user->name}}</span></div>
-                                    <small class="ml-2  text-info d-flex">Date - <span
-                                            class="text-black-50">{{$question->created_date}}</span></small>
-                                </div>
+                                {{--@include('share._author',['model'=>$question])--}}
+                                <user-info label="Asked" :model="{{$question}}"></user-info>
                             </div>
-
                         </div>
                         <div class="ml-4 mt-2 text-gray-600 text-dark" style=" word-wrap: break-word;">
-                            {{substr($question->body,0,500)}}{{strlen($question->body)>500?'...':''}}
+                            {{--                            {{substr(e($question->body),0,500)}}{{strlen(e($question->body))>500?'...':''}}--}}
+                            {{$question->excrept}}
                         </div>
                     </div>
                 </div>

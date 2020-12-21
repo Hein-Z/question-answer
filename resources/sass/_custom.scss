@@ -362,7 +362,7 @@ span {
         font-size: 25px;
     }
 
-    &.favorites-count {
+    &.favourites-count {
         font-size: 12px;
     }
 }
@@ -375,10 +375,14 @@ a {
         color: $cyan;
     }
 
-    &.favorite {
-        &.favorited, &.favorited:hover {
+    &.favourite {
+        &.favourited, &.favourited:hover {
             color: $orange;
         }
+    }
+
+    &.best-answer {
+        color: green;
     }
 
     &.vote-accepted {

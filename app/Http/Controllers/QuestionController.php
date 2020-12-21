@@ -9,6 +9,11 @@ use Illuminate\Support\Facades\Auth;
 
 class QuestionController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth', ['except' => ['index', 'show']]);
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -16,7 +21,7 @@ class QuestionController extends Controller
      */
     public function index()
     {
-        $questions = Question::latest()->paginate(5);
+        $questions = Question::with('user')->latest()->paginate(5);
         return view('question.index', compact('questions', $questions));
     }
 
@@ -96,7 +101,7 @@ class QuestionController extends Controller
     public function favourite(Question $question)
     {
         $question->favourites()->toggle(Auth::user()->id);
-        return back();
+        return response()->json(['message' => 'success']);
     }
 }
 

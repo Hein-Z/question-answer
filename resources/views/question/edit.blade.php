@@ -1,7 +1,7 @@
 @extends('layouts.master')
 @section('content')
     <div class="py-5">
-        <div class="text-center h2 font-weight-bolder"> Create Question</div>
+        <div class="text-center h2 font-weight-bolder"> Edit Question</div>
         <form action="{{route('question.update',$question->slug)}}" class="form-group" method="post">
             @method('PUT')
             @csrf

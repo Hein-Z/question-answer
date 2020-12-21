@@ -12,6 +12,7 @@ class User extends Authenticatable
 {
     use HasFactory, Notifiable;
 
+
     /**
      * The attributes that are mass assignable.
      *
@@ -22,6 +23,8 @@ class User extends Authenticatable
         'email',
         'password',
     ];
+
+    protected $appends=['gravator'];
 
     /**
      * The attributes that should be hidden for arrays.
@@ -41,6 +44,14 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function getGravatorAttribute()
+    {
+        $size = 35;
+        $email = $this->email;
+        $grav_url = "https://www.gravatar.com/avatar/" . md5(strtolower(trim($email))) . "s=" . $size;
+        return $grav_url;
+    }
 
     public function questions()
     {
@@ -67,43 +78,35 @@ class User extends Authenticatable
         return $this->morphedByMany(Answer::class, 'votable', 'votables', 'user_id', 'votable_id');
     }
 
-    public function voteQuestion( $question, $vote)
+    public function voteQuestion($question, $vote)
     {
         $questionVotes = $this->questionVotes();
-        $questionId = $question->id;
-        if ($questionVotes->where('votable_id', $questionId)->exists()) {
-            $questionVotes->updateExistingPivot($question, ['vote' => $vote]);
-        } else {
-            $questionVotes->attach($question, ['vote' => $vote]);
-        }
-
-        $question->load('votes');
-        $upvotes = (int)$question->votes()->wherePivot('vote', 1)->sum('vote');
-        $downvotes = (int)$question->votes()->wherePivot('vote', -1)->sum('vote');
-
-        $question->votes_count = $upvotes + $downvotes;
-
-        $question->save();
+        return $this->_vote($questionVotes, $question, $vote);
     }
 
     public function voteAnswer(Answer $answer, $vote)
     {
         $answerVotes = $this->answerVotes();
-        $answerId = $answer->id;
+        return $this->_vote($answerVotes, $answer, $vote);
+    }
 
-        if ($answerVotes->where('votable_id', $answerId)->exists()) {
-            $answerVotes->updateExistingPivot($answer, ['vote' => $vote]);
+    private function _vote($relationshipVotes, $model, $vote)
+    {
+        if ($relationshipVotes->where('votable_id', $model->id)->exists()) {
+            $relationshipVotes->updateExistingPivot($model, ['vote' => $vote]);
         } else {
-            $answerVotes->attach($answer, ['vote' => $vote]);
+            $relationshipVotes->attach($model, ['vote' => $vote]);
         }
 
-        $answer->load('votes');
-        $upvotes = (int)$answer->votes()->wherePivot('vote', 1)->sum('vote');
-        $downvotes = (int)$answer->votes()->wherePivot('vote', -1)->sum('vote');
+        $model->load('votes');
+        $upvotes = (int)$model->upVotes()->sum('vote');
+        $downvotes = (int)$model->downVotes()->sum('vote');
 
-        $answer->votes_count = $upvotes + $downvotes;
+        $model->votes_count = $upvotes + $downvotes;
 
-        $answer->save();
+        $model->save();
+
+        return $upvotes + $downvotes;
     }
 
 
