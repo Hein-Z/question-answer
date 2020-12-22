@@ -406,6 +406,11 @@ a.vote-accepted {
   color: #38c172;
 }
 
+a.disabled {
+  pointer-events: none;
+  cursor: default;
+}
+
 /*!
  * Bootstrap v4.5.3 (https://getbootstrap.com/)
  * Copyright 2011-2020 The Bootstrap Authors
