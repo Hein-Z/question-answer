@@ -22,8 +22,13 @@ class VoteController extends Controller
     public function answer(Answer $answer)
     {
         $vote = (int)\request()->vote;
+        if ($vote === 1) {
+            $message = 'Successfully Up vote';
+        } else {
+            $message = 'Successfully Down vote';
+        }
+        $votesCount = Auth::user()->voteAnswer($answer, $vote);
 
-        Auth::user()->voteAnswer($answer, $vote);
-        return back();
+        return response()->json(['message' => $message, 'votesCount' => $votesCount]);
     }
 }

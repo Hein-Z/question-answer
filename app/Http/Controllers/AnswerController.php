@@ -45,8 +45,9 @@ class AnswerController extends Controller
      */
     public function update(Request $request, Question $question, Answer $answer)
     {
-        $answer->update($request->validate(['body' => 'required']));
-        return redirect()->route('question.show', $question->slug)->with('msg', 'Successfully Edited');
+        $result = $answer->update($request->validate(['body' => 'required']));
+        return response()->json(['message' => 'success', 'body' => $answer->body]);
+//        return redirect()->route('question.show', $question->slug)->with('msg', 'Successfully Edited');
     }
 
     /**
@@ -59,7 +60,8 @@ class AnswerController extends Controller
     {
         $this->authorize('answer', $answer);
         $answer->delete();
-        return back()->with('msg', 'Successfully Deleted');
+        return response()->json(['message' => 'success']);
+//        return back()->with('msg', 'Successfully Deleted');
     }
 
     public function acceptBestAnswer(Question $question, Request $request)

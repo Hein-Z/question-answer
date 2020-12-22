@@ -14,19 +14,11 @@
             <div class="row">
                 <div class="col-md-1 col-2 py-5 px-0">
                     <div class="d-flex flex-column align-items-center justify-content-center">
-                        <a title="Click to mark as favorite question (Click again to undo)"
-                           class="favorite mt-2 {{$question->status}} flex flex-column"
-                           onclick="event.preventDefault();document.getElementById('favourite').submit()"
-                        >
-                            <i class="fas fa-star fa-2x"></i>
-                        </a>
-                        <form
-                            action="{{route('question.favourite',$question->slug)}}"
-                            method="post" style="display: none" id="favourite"
-                        >@csrf</form>
+                        <favourite :question="{{$question}}">
+                        </favourite>
 
                         <a title="Click to vote up question "
-                           class=" mt-2 btn {{$question->upVoteStatus(auth()->user())}} flex flex-column"
+                           class=" mt-2 btn {{$question->up_vote_status}} flex flex-column"
                            onclick="event.preventDefault();document.getElementById('up-vote').submit()"
                         >
                             <i class="fas fa-chevron-up fa-2x"></i>
@@ -42,7 +34,7 @@
                             <div class="text-center">{{$question->votes_count}}</div>
                         </div>
                         <a title="Click to vote down question "
-                           class=" mt-2 btn {{$question->downVoteStatus(auth()->user())}}  flex flex-column"
+                           class=" mt-2 btn {{$question->down_vote_status}}  flex flex-column"
                            onclick="event.preventDefault();document.getElementById('down-vote').submit()"
                         >
                             <i class="fas fa-chevron-down fa-2x"></i>
@@ -55,42 +47,37 @@
                         <h5 class="font-weight-bolder">{{$question->views}}</h5>
                         <div>{{ngettext('View','Views',$question->views)}}</div>
                     </div>
-
                 </div>
                 <div class="py-5 col-md-11 col-10">
-                    <div class="flex items-center d-flex flex-column align-items-start ">
-                        <div
-                            class="ml-4 text-lg leading-7 font-semibold align-self-stretch d-flex justify-content-between">
-                            <div class="h1">{{$question->title}}</div>
-                            <div>
-                                @can('question',$question)
-                                    <a class="btn btn-outline-success btn-sm align-self-center"
-                                       href="{{route('question.edit',$question->slug)}}">Edit</a>
-                                    <form action="{{route('question.destroy',$question->slug)}}" method="post"
-                                          style="display:contents">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" onclick="confirm('Do you want to delete this question??')"
-                                                class="btn btn-outline-danger btn-sm align-self-center">
-                                            Delete
-                                        </button>
-                                    </form>
-                                @endcan
+                    <div class="flex flex-column ml-4">
+                        <div class="flex items-center d-flex flex-column align-items-start ">
+                            <div
+                                class="text-lg leading-7 font-semibold flex-row align-self-stretch d-flex justify-content-between">
+                                <div class="h1">{{$question->title}}</div>
+                                <div class="flex-row flex">
+                                    @can('question',$question)
+                                        <a class="btn btn-outline-success btn-sm align-self-center"
+                                           href="{{route('question.edit',$question->slug)}}">Edit</a>
+                                        <form action="{{route('question.destroy',$question->slug)}}" method="post"
+                                              style="display:contents">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit"
+                                                    onclick="if(!confirm('Do you want to delete this question??'))return false"
+                                                    class="btn btn-outline-danger btn-sm align-self-center">
+                                                Delete
+                                            </button>
+                                        </form>
+                                    @endcan
+                                </div>
+
                             </div>
                         </div>
+                        <user-info label="Asked" :model="{{$question}}"></user-info>
+
                     </div>
-                    <div class="flex ml-4">
-                        <img src="{{$question->gravator}}" alt="avator" class="img-thumbnail" width="50px"
-                             height="50px">
-                        <div>
-                            <div class="ml-2 h5 text-info d-flex">Asked By - <span
-                                    class="text-black-50">{{$question->user->name}}</span></div>
-                            <small class="ml-2  text-info d-flex">Date - <span
-                                    class="text-black-50">{{$question->created_date}}</span></small>
-                        </div>
-                    </div>
-                    <div class="ml-4 mt-2 text-gray-600 text-dark" style="  word-wrap: break-word;">
-                        {{$question->body}}
+                    <div class="ml-4 mt-2  text-gray-600 text-dark " style=" flex-wrap: wrap">
+                        <p>{!! $question->body_html!!}</p>
                     </div>
                 </div>
 
@@ -120,99 +107,7 @@
     </div>
 
 
-    @foreach($question->answers as $answer)
-
-        <div class="col-12 border-dark border-bottom mt-1">
-            <div class="row pb-3 pt-1">
-                <div class="col-md-1 col-2  px-0">
-                    <div class="d-flex flex-column align-items-center justify-content-center">
-
-                        <a title="Click to vote up answer "
-                           class=" mt-2 btn  flex flex-column"
-                           onclick="event.preventDefault();document.getElementById('answer-up-vote').submit()"
-                        >
-                            <i class="fas fa-chevron-circle-up fa-1x"></i>
-                        </a>
-                        <form action="{{route('answer.vote',$answer->id)}}" id="answer-up-vote" method="post"
-                              style="display:none">
-                            @csrf
-                            <input type="hidden" value="1" name="vote">
-                        </form>
-                        <span class="votes-count">{{$answer->votes_count}}</span>
-                        <a title="Click to vote down answer "
-                           class=" mt-2 btn  flex flex-column"
-                           onclick="event.preventDefault();document.getElementById('answer-down-vote').submit()"
-                        >
-                            <i class="fas fa-chevron-circle-down fa-1x"></i>
-                        </a>
-                        <form action="{{route('answer.vote',$answer->id)}}" id="answer-down-vote" method="post"
-                              style="display:none">
-                            @csrf
-                            <input type="hidden" value="-1" name="vote">
-                        </form>
-
-                        @can('acceptAnswer',$question)
-                            <a title="Click to mark as favorite Answer (Click again to undo)"
-                               class="favorite mt-2 {{$answer->status}} flex flex-column"
-                               onclick="event.preventDefault();document.getElementById('bestAnswer-{{$answer->id}}').submit()"
-                            >
-                                <i class="fas fa-star fa-2x"></i>
-
-                            </a>
-                            <form
-                                action="{{route('question.answer.acceptBestAnswer',[$question->slug,$answer->id])}}"
-                                method="post" style="display: none" id="bestAnswer-{{$answer->id}}"
-                            >@csrf</form>
-                        @endcan
-
-                    </div>
-                </div>
-                <div class=" col-md-11 col-10">
-                    <div class="flex items-center d-flex flex-column align-items-start ">
-                        <div
-                            class="ml-4 text-lg leading-7 font-semibold align-self-stretch d-flex justify-content-between">
-                            <div class=" d-flex justify-content-between align-self-start" style="width: 110px">
-                                {{--                            @can('update',$question)--}}
-                                {{--                                <a class="btn btn-outline-success btn-sm "--}}
-                                {{--                                   href="{{route('question.edit',$question->slug)}}">Edit</a>--}}
-                                {{--                            @endcan--}}
-                            </div>
-                        </div>
-                    </div>
-                    <div class="ml-4 mt-2 text-gray-600 text-dark" style=" word-wrap: break-word;">
-                        {{$answer->body}}
-                    </div>
-                    <div class="flex flex-column ml-4 mt-4">
-                        <div class="flex ">
-                            <img src="{{$answer->gravator}}" alt="avator" class="img-thumbnail" width="50px"
-                                 height="50px">
-                            <div>
-                                <div class="ml-2 h5 text-info d-flex">Answered By - <span
-                                        class="text-black-50">{{$answer->user->name}}</span></div>
-                                <small class="ml-2  text-info d-flex">Date - <span
-                                        class="text-black-50">{{$answer->created_date}}</span></small>
-                            </div>
-                        </div>
-                        @can('answer',$answer)
-                            <div class="flex mt-3">
-                                <a class="btn btn-primary btn-sm"
-                                   href="{{route('question.answer.edit',[$question->slug,$answer])}}">Edit</a>
-                                <form action="{{route('question.answer.destroy',[$question->slug,$answer])}}"
-                                      style="display: contents" method="post">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button class="btn btn-danger btn-sm ml-1" onclick="confirm('Are You Sure')"
-                                            type="submit">
-                                        Delete
-                                    </button>
-                                </form>
-                            </div>
-                        @endcan
-                    </div>
-                </div>
-            </div>
-        </div>
-    @endforeach
+    @include('share._answer')
 
 
 

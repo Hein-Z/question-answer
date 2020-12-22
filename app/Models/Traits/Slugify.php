@@ -5,12 +5,13 @@ namespace App\Models\Traits;
 use App\Models\Question;
 use Illuminate\Support\Str;
 
-trait Slugify{
+trait Slugify
+{
     public function createSlug($title, $id = 0)
     {
-        $slug = Str::slug($title);
+        $slug = Str::slug($title) ?? 'slug';
         $allSlugs = $this->getRelatedSlugs($slug, $id);
-        if (! $allSlugs->contains('slug', $slug)){
+        if (!$allSlugs->contains('slug', $slug)) {
             return $slug;
         }
         $i = 1;
@@ -27,7 +28,7 @@ trait Slugify{
 
     protected function getRelatedSlugs($slug, $id = 0)
     {
-        return Question::select('slug')->where('slug', 'like', $slug.'%')
+        return Question::select('slug')->where('slug', 'like', $slug . '%')
             ->where('id', '<>', $id)
             ->get();
     }

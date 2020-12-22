@@ -3,8 +3,10 @@
 namespace App\Models;
 
 use App\Models\Traits\Slugify;
+use App\Models\Traits\Votable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Mail\Markdown;
 use Illuminate\Support\Facades\Auth;
 use function Symfony\Component\Translation\t;
 
@@ -12,8 +14,10 @@ class Question extends Model
 {
     use HasFactory;
     use Slugify;
+    use Votable;
 
     protected $fillable = ['title', 'body', 'user_id'];
+    protected $appends = ['created_date', 'is_favourited'];
 
     public function user()
     {
@@ -22,7 +26,7 @@ class Question extends Model
 
     public function answers()
     {
-        return $this->hasMany(Answer::class);
+        return $this->hasMany(Answer::class)->orderByDesc('votes_count');
     }
 
     public function setTitleAttribute($value)
@@ -36,32 +40,39 @@ class Question extends Model
         return route('question.show', $this->slug);
     }
 
+    public function getBodyHtmlAttribute()
+    {
+        return Markdown::parse(strip_tags($this->body));
+    }
+
+    public function getExcreptAttribute()
+    {
+        $dot = (strlen($this->body) > 400 ? '...' : '');
+        return Markdown::parse(strip_tags(substr($this->body, 0, 400) . $dot));
+    }
+
     public function getCreatedDateAttribute()
     {
         return $this->created_at->diffForHumans();
     }
 
-    public function getGravatorAttribute()
-    {
-        $size = 35;
-        $email = $this->user->email;
-        $grav_url = "https://www.gravatar.com/avatar/" . md5(strtolower(trim($email))) . "s=" . $size;
-        return $grav_url;
-    }
 
     public function favourites()
     {
         return $this->belongsToMany(User::class, 'favourites');
     }
 
-    public function isFavourite()
+    public function isFavourited()
     {
+        if (!Auth::check()) {
+            return false;
+        }
         return $this->favourites()->where('user_id', Auth::user()->id)->exists();
     }
 
-    public function getStatusAttribute()
+    public function getIsFavouritedAttribute()
     {
-        return $this->isFavourite() ? 'favorited' : '';
+        return $this->isFavourited();
     }
 
     public function votes()
@@ -69,18 +80,26 @@ class Question extends Model
         return $this->morphToMany(User::class, 'votable', 'votables', 'votable_id', 'user_id');
     }
 
-    public function downVoteStatus($user)
+    public function getDownVoteStatusAttribute()
     {
+        if (!Auth::check()) {
+            return 'disabled';
+        }
         $questionVotes = $this->votes();
-        $isDownVote = $questionVotes->where('user_id', $user->id)->wherePivot('vote', -1)->exists();
+        $isDownVote = $questionVotes->where('user_id', Auth::user()->id)->wherePivot('vote', -1)->exists();
         return $isDownVote ? 'disabled' : '';
     }
 
-    public function upVoteStatus($user)
+    public function getUpVoteStatusAttribute()
     {
+        if (!Auth::check()) {
+            return 'disabled';
+        }
         $questionVotes = $this->votes();
-        $isUpVote = $questionVotes->where('user_id', $user->id)->wherePivot('vote', 1)->exists();
+        $isUpVote = $questionVotes->where('user_id', Auth::user()->id)->wherePivot('vote', 1)->exists();
         return $isUpVote ? 'disabled' : '';
     }
+
+
 }
 
