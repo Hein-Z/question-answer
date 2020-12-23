@@ -20,6 +20,7 @@ window.Vue = require('vue');
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default))
 
 Vue.component('answer', require('./components/Answer.vue').default);
+Vue.component('answers', require('./components/Answers.vue').default);
 Vue.component('user-info', require('./components/UserInfo.vue').default);
 Vue.component('favourite', require('./components/Favourite.vue').default);
 Vue.component('best-answer', require('./components/BestAnswer.vue').default);

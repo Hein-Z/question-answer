@@ -50,7 +50,7 @@ class RouteServiceProvider extends ServiceProvider
         });
 
         Route::bind('question', function ($slug) {
-            return Question::with(['user', 'answers.user'])->where('slug', $slug)->firstOrFail();
+            return Question::with(['user'])->where('slug', $slug)->firstOrFail();
         });
     }
 

@@ -39,7 +39,6 @@ export default {
         },
         _vote(type) {
             axios.post(`answer/${this.answer.id}/vote`, {vote: type}).then(res => {
-                alert(res.data.message);
                 this.votesCount = res.data.votesCount;
             }).catch();
         }

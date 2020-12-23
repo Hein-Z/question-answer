@@ -10,7 +10,15 @@ use phpDocumentor\Reflection\Types\Null_;
 
 class AnswerController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth', ['except' => ['index']]);
+    }
 
+    public function index(Question $question)
+    {
+        return $question->answers()->with('user')->simplePaginate(3);
+    }
 
     /**
      * Store a newly created resource in storage.
@@ -20,8 +28,9 @@ class AnswerController extends Controller
      */
     public function store(Request $request, Question $question)
     {
-        $question->answers()->create($request->validate(['body' => 'required']) + ['user_id' => Auth::user()->id]);
-        return back()->with('msg', 'Successfully Created');
+        $answer = $question->answers()->create($request->validate(['body' => 'required']) + ['user_id' => Auth::user()->id]);
+        $answer = Answer::with('user', 'question')->where('id', $answer->id)->first();
+        return response()->json(['message' => 'Successfully Created', 'answer' => $answer]);
     }
 
 

@@ -18,7 +18,7 @@ Route::get('/', function () {
 })->middleware('auth');
 
 Route::resource('question', 'QuestionController');
-Route::resource('question.answer', 'AnswerController')->except(['index', 'create', 'show'])->middleware('auth');
+Route::resource('question.answer', 'AnswerController')->except(['create', 'show'])->middleware('auth');
 Route::post('question/{question}/acceptBestAnswer/{id}', 'AnswerController@acceptBestAnswer')->name('question.answer.acceptBestAnswer')->middleware('auth');
 Route::post('question/{question}/favourite', 'QuestionController@favourite')->name('question.favourite')->middleware('auth');
 
