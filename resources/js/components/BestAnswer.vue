@@ -20,13 +20,13 @@
 </template>
 <script>
 import axios from 'axios'
+import EventBus from '../eventBus.js'
 
 export default {
     props: ['question', 'answer'],
     data() {
         return {
-            best_answer_id: this.question.best_answer_id,
-            is_best_answer: this.answer.is_best_answer,
+            is_best_answer: null,
             is_signed_in: window.Auth.signed_in,
         }
     },
@@ -34,11 +34,19 @@ export default {
         bestAnswer() {
             axios.post(`${this.question.slug}/acceptBestAnswer/${this.answer.id}`).then(res => {
                 this.is_best_answer = !this.is_best_answer;
+                EventBus.$emit('accept', this.answer.id);
             }).catch(err => {
                 alert('Login first');
             });
-        }
+        },
+    },
+    created() {
+        this.is_best_answer = this.answer.is_best_answer
+        EventBus.$on('accept', id => {
+            this.is_best_answer = (this.answer.id === id);
+        });
     }
+
 
 }
 </script>

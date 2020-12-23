@@ -87,28 +87,6 @@
     </div>
 
     @include('_alert')
-    <div class="row">
-        <div
-            class="text-center col-12 h1 font-weight-bolder bg-gray-100">{{$question->answers_count}} {{ngettext('Answer','Answers',$question->views)}}</div>
-        @if(count($question->answers)===0)
-            <div class="text-center col-12 h3 font-weight-bolder bg-gray-100">There is no answers yet</div>
-        @endif
-
-        <div class="col-12">
-            <form action="{{route('question.answer.store',$question->slug)}}" method="post">
-                @csrf
-                <label for="answer">Enter Your Answer</label>
-                <textarea name="body" class="form-control @error('body') is-invalid @enderror" placeholder="Your Answer"
-                          id="answer" cols="30" rows="6"
-                          style="resize: none"></textarea>
-                <button type="submit" class="btn-block btn btn-primary my-1">Post</button>
-            </form>
-        </div>
-    </div>
-
-
-    @include('share._answer')
-
-
+    <answers  :question="{{$question}}"></answers>
 
 @endsection
